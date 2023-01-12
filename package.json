@@ -4,8 +4,16 @@
   "description": "Simple telegram bot working with bitbucket api",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js",
+    "dev": "nodemon index.js"
   },
   "author": "Vitaliy I <michael8913@gmail.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "fastify": "^4.11.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  }
 }
