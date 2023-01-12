@@ -1,0 +1,11 @@
+{
+  "name": "bitbucket-telegram-bot",
+  "version": "1.0.0",
+  "description": "Simple telegram bot working with bitbucket api",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Vitaliy I <michael8913@gmail.com>",
+  "license": "MIT"
+}
