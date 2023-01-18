@@ -2,7 +2,8 @@ const fs = require("fs");
 
 function readLastCount() {
   try {
-    return fs.readFileSync("database.json", { encoding: "utf-8" });
+    const data = fs.readFileSync("database.json", { encoding: "utf-8" });
+    return data && JSON.parse(data);
   } catch (error) {
     console.error("Error reead last count: ", error);
     return {};

@@ -1,13 +1,14 @@
 require("dotenv").config();
 
-const { Telegraf } = require("telegraf");
+const { Telegraf, Format } = require("telegraf");
 const { message } = require("telegraf/filters");
 const cron = require("node-cron");
-const { getSizePullRequests } = require("./bitbucket");
+const { getSizePullRequests, getOpenPullRequests } = require("./bitbucket");
 const { readLastCount, writeLastCount } = require("./jsonWork");
 
 const PORT = process.env.PORT || 3000;
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+const CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 
 const bot = new Telegraf(BOT_TOKEN);
 
@@ -21,21 +22,47 @@ async function taskExecute() {
   const actualSize = await getSizePullRequests();
   try {
     if (actualSize > size) {
-      //     try:
-      //     msg = text("🔥 У вас есть - " + bold(str(size)) + " Pull requests в статусе OPEN:\n")
-      //     await bot.send_message("id группы", msg, parse_mode=ParseMode.MARKDOWN)
-      // except:
-      //     await message.reply("❗ ВАЖНО: Вам нужно добавиться к боту, все уведомления идут в ЛС!!!")
-      // for request in bitBacketUtils.get_open_pull_requests():
-      //     mess = text("🔹 Имя автора:  " + bold(request["Имя автора"]) + "\n"
-      //                 "🔹 Имя ветки:  " + request["Commit branch"].replace("_", " ") + "\n"
-      //                 "Состояние:  " + code(request["Состояние"]) + "\n"
-      //                 "Роль:  " + code(request["Роль"]) + "\n"
-      //                 "👉 Кол-во проверок:  " + bold(str(request["Кол-во проверок"])) + "\n"
-      //                 "👉 Кол-во комментариев:  " + bold(str(request["Кол-во комментариев"])) + "\n"
-      //                 "🙏 Проверьте меня): ", request["Проверьте меня)"])
-      //     await bot.send_message("id группы", mess, parse_mode=ParseMode.MARKDOWN)
-      // print("Wow " + str(size) + " " + str(size_2))
+      try {
+        const msg =
+          "🔥 У вас есть - " +
+          Format.bold(String(size)) +
+          " Pull requests в статусе OPEN:\n";
+        console.log(msg);
+        // await bot.telegram.sendMessage(CHAT_ID, msg, {
+        //   parse_mode: "Markdown",
+        // });
+      } catch {
+        await bot.context.reply(
+          "❗ ВАЖНО: Вам нужно добавиться к боту, все уведомления идут в ЛС!!!"
+        );
+      }
+
+      const openPullRequests = await getOpenPullRequests();
+      for (const request of openPullRequests) {
+        const msg =
+          "🔹 Имя автора:  " +
+          Format.bold(request.author) +
+          "\n" +
+          "🔹 Имя ветки:  " +
+          request.title.replace("_", " ") +
+          "\n" +
+          "Состояние:  " +
+          Format.code(request.state) +
+          "\n" +
+          "👉 Кол-во проверок:  " +
+          Format.bold(String(request.count)) +
+          "\n" +
+          "👉 Кол-во комментариев:  " +
+          Format.bold(String(request.comments)) +
+          "\n" +
+          "🙏 Проверьте меня): " +
+          request.link;
+        console.log(msg);
+        // await bot.telegram.sendMessage(CHAT_ID, msg, {
+        //   parse_mode: "Markdown",
+        // });
+      }
+
       size = actualSize;
       writeLastCount("lastCount", size);
     } else {
